@@ -260,11 +260,6 @@ INSERT INTO dropping_own_Items VALUES ('GoblinHammer', 7, 'Gobbo', 2);
 INSERT INTO dropping_own_Items VALUES ('TrollClub', 6, 'TrollKing', 2);
 INSERT INTO dropping_own_Items VALUES ('DrakeFang', 18, 'FireDrake', 4);
 INSERT INTO dropping_own_Items VALUES ('DemonHorn', 28, 'Hellspawn', 5);
-INSERT INTO dropping_own_Items VALUES ('ShadowWraithBlade', 32, 'ShadowWraith', 6);
-INSERT INTO dropping_own_Items VALUES ('TitanGolemShield', 38, 'TitanGolem', 7);
-INSERT INTO dropping_own_Items VALUES ('SkyHarpyClaw', 42, 'SkyHarpy', 8);
-INSERT INTO dropping_own_Items VALUES ('ReaperDarkScythe', 48, 'SoulReaper', 9);
-INSERT INTO dropping_own_Items VALUES ('AncientSpiritStone', 55, 'PrimordialSpirit', 10);
 
 INSERT INTO dropping_own_Items VALUES ('MythrilArmor', 30, NULL, NULL);
 INSERT INTO dropping_own_Items VALUES ('ObsidianShield', 33, NULL, NULL);
