@@ -49,7 +49,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 <body>
 	<h2>Reset</h2>
-	<p>If you wish to reset the table press on the reset button.</p>
+	<p>If you wish to reset the all the tables press on the reset button. </p>
 
 	<form method="POST" action="oracle-app.php">
 		<!-- "action" specifies the file or page that will receive the form data for processing. As with this example, it can be this same file. -->
@@ -125,7 +125,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<form method="GET" action="oracle-app.php">
         <input type="hidden" id="selectionPlayersFixedRequest" name="selectionPlayersFixedRequest">
-		<label>Equip Level</label>
+		<label>Player Level</label>
 		<select name="operator">
         	<option value=">=">&ge;</option>
         	<option value="<=">&le;</option>
@@ -459,7 +459,6 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
         }
     }
 
-    // 2. Create tables one by one
     $createStatements = [
 
         "CREATE TABLE Guild(
@@ -634,20 +633,52 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	{
 		global $db_conn;
 
-		$tuple = array(
-			":bind1" => $_POST['itemName'],
-			":bind2" => $_POST['equipLevel'],
-			":bind3" => $_POST['enemyName'],			
-			":bind4" => $_POST['playerId'],
-		);
+    	$itemName   = $_POST['itemName'];
+    	$equipLevel = $_POST['equipLevel'];
+    	$enemyName  = $_POST['enemyName'];
+    	$playerId   = $_POST['playerId'];
 
-		$alltuples = array(
-			$tuple
-		);
+    	if ($enemyName === '' || $enemyName === null) {
+        	echo "<p style='color:red;'><b>Error:</b> Enemy name cannot be empty.</p>";
+        	return;
+    	}
 
-		executeBoundSQL("insert into dropping_own_Items (item_name, equip_level, enemy_name, player_id)
-							values (:bind1, :bind2, :bind3, :bind4)", $alltuples);
-		oci_commit($db_conn);
+    	if ($playerId === '' || $playerId === null) {
+        	echo "<p style='color:red;'><b>Error:</b> Player ID cannot be empty.</p>";
+        	return;
+    	}
+
+    	$enemyCheckSql = "SELECT enemy_name FROM has_enemy2 WHERE enemy_name = '" . $enemyName . "'";
+    	$enemyCheck = executePlainSQL($enemyCheckSql);
+    	if (($row = oci_fetch_array($enemyCheck, OCI_NUM)) == false) {
+        	echo "<p style='color:red;'><b>Error:</b> Enemy name <b>" . htmlentities($enemyName) . "</b> does not exist.</p>";
+        	return;
+    	}
+
+    	$playerCheckSql = "SELECT player_id FROM join_Player WHERE player_id = " . intval($playerId);
+    	$playerCheck = executePlainSQL($playerCheckSql);
+    	if (($row = oci_fetch_array($playerCheck, OCI_NUM)) == false) {
+        	echo "<p style='color:red;'><b>Error:</b> Player ID <b>" . htmlentities($playerId) . "</b> does not exist.</p>";
+        	return;
+    	}
+
+    	$tuple = array(
+        	":bind1" => $itemName,
+        	":bind2" => $equipLevel,
+        	":bind3" => $enemyName,
+        	":bind4" => $playerId,
+    	);
+
+    	$alltuples = array($tuple);
+
+    	executeBoundSQL(
+        	"INSERT INTO dropping_own_Items (item_name, equip_level, enemy_name, player_id)
+         	VALUES (:bind1, :bind2, :bind3, :bind4)",
+        	$alltuples
+    	);
+    	oci_commit($db_conn);
+
+    	echo "<p style='color:green;'><b>Success:</b> Item <b>" . htmlentities($itemName) . "</b> inserted.</p>";
 	}
 
 	function handleDeleteRequest()
